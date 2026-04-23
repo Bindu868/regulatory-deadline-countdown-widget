@@ -39,6 +39,13 @@ public interface RegulatoryDeadlineRepository extends JpaRepository<RegulatoryDe
             LocalDate deadlineDate
     );
 
+    boolean existsByTitleIgnoreCaseAndRegulatoryBodyIgnoreCaseAndDeadlineDateAndIdNot(
+            String title,
+            String regulatoryBody,
+            LocalDate deadlineDate,
+            Long id
+    );
+
     @Query("""
             select rd
             from RegulatoryDeadline rd
