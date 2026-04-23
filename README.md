@@ -31,10 +31,6 @@ Backend work for internship capstone project.
 
 
 
-### Day 3
-- Implemented service layer
-- Added business logic
-- Added input validation
-- Added custom exception classes
+
 
 
