@@ -1,5 +1,7 @@
 package com.internship.tool.config;
 
+import com.internship.tool.entity.AppUser;
+import com.internship.tool.repository.AppUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,7 +23,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final AppUserRepository appUserRepository;
 
     @Override
     protected void doFilterInternal(
@@ -43,9 +43,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String username = jwtUtil.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                AppUser userDetails = appUserRepository.findByEmailIgnoreCase(username)
+                        .orElse(null);
 
-                if (jwtUtil.isAccessTokenValid(jwt, userDetails)) {
+                if (userDetails != null && jwtUtil.isAccessTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
